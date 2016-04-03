@@ -30,7 +30,7 @@ public class PesquisaController implements ActionListener {
 		this.btnProcurar = btnProcurar;
 	}
 	
-	private void procurarLivro(String itemMenu, String texto){
+	public void procurarLivro(String itemMenu, String texto){
 		ManipulaArquivoLivro arqLivro = new ManipulaArquivoLivro();
 		Set<Livro> listLivros = new HashSet();
 		try {

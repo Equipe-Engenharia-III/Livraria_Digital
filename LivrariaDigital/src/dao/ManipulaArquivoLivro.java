@@ -39,7 +39,7 @@ public class ManipulaArquivoLivro {
 //		buffer.append(livro.getIndice());
 		buffer.append("Indice");
 		buffer.append("\r\n");
-		buffer.append("---");
+		buffer.append("---");//Separador de livros - Utilizado no metodo atualizarLivro() desta classe
 		
 		String fileName = "regLivro.txt";
         File arq = new File(fileName);
@@ -86,5 +86,60 @@ public class ManipulaArquivoLivro {
 			e.printStackTrace();
 		}
 		return arrayLivro;
+	}
+	
+	public void atualizarLivro(Livro oldLivro, Livro newLivro){
+		String fileName = "regLivro.txt";
+		try {
+			BufferedReader leitor = new BufferedReader(new FileReader( fileName ));
+			File arq = new File( fileName );
+			FileWriter escreveArquivo;
+			escreveArquivo = new FileWriter(arq, true); //arquivo deve existir
+	        PrintWriter gravaDados = new PrintWriter(escreveArquivo);
+			String linha = leitor.readLine(); //Lê o ISBN
+			while( linha != null ){
+				//sobrescreve o ISBN caso ele tenha sido alterado
+				if( linha.equals( oldLivro.getIsbn() ) ){
+					gravaDados.append( newLivro.getIsbn() );
+				}
+				//Lê a proxima linha e verifica se o titulo foi alterado
+				if( leitor.readLine().equals( oldLivro.getTitulo() ) ){
+					gravaDados.append( newLivro.getTitulo() );
+				}
+				//Lê a proxima linha e verifica se o Autor foi alterado e assim por diante...
+				if( leitor.readLine().equals( oldLivro.getAutor() ) ){
+					gravaDados.append( newLivro.getAutor() );
+				}
+				if( leitor.readLine().equals( oldLivro.getDtPublicacao() ) ){
+					gravaDados.append( newLivro.getDtPublicacao() );
+				}
+				if( leitor.readLine().equals( oldLivro.getEditora() ) ){
+					gravaDados.append( newLivro.getEditora() );
+				}
+				if( leitor.readLine().equals( oldLivro.getCategoria() ) ){
+					gravaDados.append( newLivro.getCategoria() );
+				}
+				if( leitor.readLine().equals( oldLivro.getResumo() ) ){
+					gravaDados.append( newLivro.getResumo() );
+				}
+				if( leitor.readLine().equals( oldLivro.getPrecoCusto() ) ){
+					gravaDados.append( Float.toString( newLivro.getPrecoCusto() ) );
+				}
+				if( leitor.readLine().equals( oldLivro.getPrecoVenda() ) ){
+					gravaDados.append( Float.toString( newLivro.getPrecoVenda() ) );
+				}
+//				livro.setIndice( leitor.readLine() );
+				leitor.readLine(); //Futuro indice
+				leitor.readLine(); //linha que separa os livros
+				linha = leitor.readLine();
+			}
+			gravaDados.flush();
+			gravaDados.close();
+			escreveArquivo.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
