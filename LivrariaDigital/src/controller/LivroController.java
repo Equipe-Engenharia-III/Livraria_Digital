@@ -53,7 +53,7 @@ public class LivroController implements ActionListener{
 		Livro livro = new Livro();
 		ManipulaArquivoLivro daoLivro = new ManipulaArquivoLivro();
 		StringBuffer mensagem = new StringBuffer();
-		
+		//Verifica se os campos estÃ£o vazios
 		if( ! txtIsbn.getText().isEmpty() ){
 			livro.setIsbn( txtIsbn.getText() );
 		} else{
@@ -72,7 +72,7 @@ public class LivroController implements ActionListener{
 		if( ! txtDtPublicacao.getText().isEmpty() ){
 			livro.setDtPublicacao( txtDtPublicacao.getText() );
 		} else{
-			mensagem.append("Data de Publicação, ");
+			mensagem.append("Data de Publicacao, ");
 		}
 		if( ! cbEditora.getSelectedItem().toString().isEmpty() ){
 			livro.setEditora( cbEditora.getSelectedItem().toString() );
@@ -90,28 +90,44 @@ public class LivroController implements ActionListener{
 			mensagem.append("Resumo, ");
 		}
 		if( ! txtPrecoCusto.getText().isEmpty() ){
-			livro.setResumo( txtPrecoCusto.getText() );
+			//Verifica se foi digitado virgula. Se sim substitui por ponto
+			if(txtPrecoCusto.getText().contains(",")){
+				txtPrecoCusto.setText( txtPrecoCusto.getText().replace(",", ".") );
+			}
+			livro.setPrecoCusto( Float.parseFloat( txtPrecoCusto.getText() ) );
 		} else{
-			mensagem.append("Preço Custo, ");
+			mensagem.append("Preco Custo, ");
 		}
 		if( ! txtPrecoVenda.getText().isEmpty() ){
-			livro.setResumo( txtPrecoVenda.getText() );
+			livro.setPrecoVenda( Float.parseFloat( txtPrecoVenda.getText() ) );
 		} else{
-			mensagem.append("Preço Venda, ");
+			mensagem.append("Preco Venda, ");
 		}
-		//Se houver campos vazios é apresentada a mensagem, caso contrário grava o conteudo
+		//Se houver campos vazios eh apresentada a mensagem, caso contrario grava o conteudo
 		if( mensagem.length() != 0 ){
 			JOptionPane.showMessageDialog(null, "Preencha os campos: (" + mensagem.toString() + ")");
 		} else{
 			try {
 				daoLivro.gravarLivro(livro);
 				JOptionPane.showMessageDialog(null, "Livro gravado com sucesso!");
+				limparCampos();
 			} catch (IOException e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(null, "Houve um problema com a gravaÃ§Ã£o do livro");
 			}
 		}
-		
+	}
+	
+	private void limparCampos(){
+		txtIsbn.setText("");
+		txtTitulo.setText("");
+		cbAutor.setSelectedIndex(0);
+		txtDtPublicacao.setText("");
+		cbEditora.setSelectedIndex(0);
+		cbCategoria.setSelectedIndex(0);
+		txtaResumo.setText("");;
+		txtPrecoCusto.setText("");
+		txtPrecoVenda.setText("");
 	}
 //	
 //	public Livro alterarLivro(){
@@ -130,7 +146,4 @@ public class LivroController implements ActionListener{
 			return;
 		}
 	}
-	
-	
-	
 }

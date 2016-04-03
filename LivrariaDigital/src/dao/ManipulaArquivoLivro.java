@@ -39,6 +39,7 @@ public class ManipulaArquivoLivro {
 //		buffer.append(livro.getIndice());
 		buffer.append("Indice");
 		buffer.append("\r\n");
+		buffer.append("---");
 		
 		String fileName = "regLivro.txt";
         File arq = new File(fileName);
@@ -60,11 +61,12 @@ public class ManipulaArquivoLivro {
 	public ArrayList<Livro> lerLivro() throws FileNotFoundException{
 		String fileName = "regLivro.txt";
 		BufferedReader leitor = new BufferedReader(new FileReader(fileName));
-		ArrayList<Livro> arrayLivro = new ArrayList<>();
-		Livro livro = new Livro();
+		ArrayList<Livro> arrayLivro = new ArrayList<Livro>();
+		Livro livro;
 		try {
 			String linha = leitor.readLine();
 			while( linha != null ){
+				livro = new Livro();
 				livro.setIsbn( linha );
 				livro.setTitulo( leitor.readLine() );
 				livro.setAutor( leitor.readLine() );
@@ -75,7 +77,8 @@ public class ManipulaArquivoLivro {
 				livro.setPrecoCusto( Float.parseFloat( leitor.readLine() ) );
 				livro.setPrecoVenda( Float.parseFloat( leitor.readLine() ) );
 //				livro.setIndice( leitor.readLine() );
-				leitor.readLine(); //lê a linha que separa os livros
+				leitor.readLine(); //Futuro indice
+				leitor.readLine(); //linha que separa os livros
 				linha = leitor.readLine();
 				arrayLivro.add(livro);
 			}

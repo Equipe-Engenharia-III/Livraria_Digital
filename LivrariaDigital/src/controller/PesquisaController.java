@@ -22,7 +22,8 @@ public class PesquisaController implements ActionListener {
 	private JTextField txtPesquisa;
 	private JButton btnProcurar;
 	
-	public PesquisaController(JComboBox<String> cbItensPesquisa, JTextField txtPesquisa,
+	public PesquisaController(JComboBox<String> cbItensPesquisa, 
+			JTextField txtPesquisa, 
 			JButton btnProcurar) {
 		this.cbItensPesquisa = cbItensPesquisa;
 		this.txtPesquisa = txtPesquisa;
@@ -35,21 +36,21 @@ public class PesquisaController implements ActionListener {
 		try {
 			texto = texto.toUpperCase();
 			for( Livro livro : arqLivro.lerLivro() ){
-				if(itemMenu.toUpperCase().equals("TITULO")){
-					if(livro.getTitulo().toUpperCase().contains( texto )){
-						listLivros.add(livro);
+				if(itemMenu.equals("TITULO")){
+					if(livro.getTitulo().contains( texto )){
+						listLivros.add( livro );
 					}
 				} else if(itemMenu.toUpperCase().equals("AUTOR")){
-					if(livro.getAutor().toUpperCase().contains(texto)){
-						listLivros.add(livro);
+					if(livro.getAutor().contains( texto )){
+						listLivros.add( livro );
 					}
 				} else if(itemMenu.toUpperCase().equals("EDITORA")){
-					if(livro.getEditora().toUpperCase().contains(texto)){
-						listLivros.add(livro);
+					if(livro.getEditora().contains( texto )){
+						listLivros.add( livro );
 					}
 				} else if(itemMenu.toUpperCase().equals("CATEGORIA")){
-					if(livro.getCategoria().toUpperCase().contains(texto)){
-						listLivros.add(livro);
+					if(livro.getCategoria().contains( texto )){
+						listLivros.add( livro );
 					}
 				}
 			}
@@ -67,15 +68,13 @@ public class PesquisaController implements ActionListener {
 		}
 	}
 	
-	
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource(); //verifica qual botão está solicitando a ação
 		if(source == btnProcurar){
-			procurarLivro(cbItensPesquisa.getSelectedItem().toString(), txtPesquisa.getText());
+			procurarLivro(cbItensPesquisa.getSelectedItem().toString().toUpperCase(), 
+					txtPesquisa.getText().toUpperCase());
 			return;
 		}
 	}
-
 }
