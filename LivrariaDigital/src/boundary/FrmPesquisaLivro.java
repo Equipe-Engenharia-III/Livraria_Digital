@@ -42,7 +42,7 @@ public class FrmPesquisaLivro {
 		janelaPesquisa.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		
 		PesquisaController pesqController = new PesquisaController(
-				cbItensPesquisa, txtPesquisa, btnProcurar);
+				cbItensPesquisa, txtPesquisa, btnProcurar, janelaPesquisa);
 		btnProcurar.addActionListener(pesqController);
 	}
 	

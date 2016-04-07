@@ -10,9 +10,15 @@ import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.html.HTMLDocument.Iterator;
 
+import boundary.FrmListaLivros;
+import boundary.FrmPesquisaLivro;
 import dao.ManipulaArquivoLivro;
 import entity.Livro;
 
@@ -21,18 +27,21 @@ public class PesquisaController implements ActionListener {
 	private JComboBox<String> cbItensPesquisa;
 	private JTextField txtPesquisa;
 	private JButton btnProcurar;
+	private JFrame janelaPesquisa;
 	
 	public PesquisaController(JComboBox<String> cbItensPesquisa, 
 			JTextField txtPesquisa, 
-			JButton btnProcurar) {
+			JButton btnProcurar,
+			JFrame janelaPesquisa) {
 		this.cbItensPesquisa = cbItensPesquisa;
 		this.txtPesquisa = txtPesquisa;
 		this.btnProcurar = btnProcurar;
+		this.janelaPesquisa = janelaPesquisa;
 	}
 	
 	public void procurarLivro(String itemMenu, String texto){
 		ManipulaArquivoLivro arqLivro = new ManipulaArquivoLivro();
-		Set<Livro> listLivros = new HashSet();
+		List<Livro> listLivros = new ArrayList();
 		try {
 			texto = texto.toUpperCase();
 			for( Livro livro : arqLivro.lerLivro() ){
@@ -54,14 +63,22 @@ public class PesquisaController implements ActionListener {
 					}
 				}
 			}
+			if( listLivros.size() > 0 && !(itemMenu.isEmpty()) ){
+				FrmListaLivros frmListaLivros = new FrmListaLivros(itemMenu, texto, listLivros);
+			} else if( !(itemMenu.isEmpty()) ){
+				JOptionPane.showMessageDialog(janelaPesquisa, "Nenhum resultado encontrado!");
+			} else {
+				JOptionPane.showMessageDialog(janelaPesquisa, "Digite algo ou escolha uma opção!");
+			}
 			
 			//Somente para teste
+			//Titulo, Autor, Preço, detalhes, add carinho
 			for( Livro livro : listLivros ){
-				System.out.println("ISBN: " + livro.getIsbn());
 				System.out.println("Titulo: " + livro.getTitulo());
 				System.out.println("Autor: " + livro.getAutor());
-				System.out.println("Categoria: " + livro.getCategoria());
-				System.out.println("Resumo: " + livro.getResumo());
+				System.out.println("Preço: " + livro.getPrecoVenda());
+				System.out.println("DETALHES");
+				System.out.println("ADD CARINHO");
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -70,7 +87,7 @@ public class PesquisaController implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource(); //verifica qual botão está solicitando a ação
+		Object source = e.getSource(); //verifica qual botÃ£o estÃ¡ solicitando a aÃ§Ã£o
 		if(source == btnProcurar){
 			procurarLivro(cbItensPesquisa.getSelectedItem().toString().toUpperCase(), 
 					txtPesquisa.getText().toUpperCase());

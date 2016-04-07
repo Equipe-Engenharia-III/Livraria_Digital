@@ -63,16 +63,16 @@ public class FrmCrudLivro {
 		cbCategoria = new JComboBox<String>();
 		lblResumo = new JLabel("Resumo: ");
 		txtaResumo = new JTextArea(3, 20);
-		lblPrecoCusto = new JLabel("Pre�o de Custo: ");
+		lblPrecoCusto = new JLabel("Preço de Custo: ");
 		txtPrecoCusto = new JTextField(7);
-		lblPrecoVenda = new JLabel("Pre�o de Venda: ");
+		lblPrecoVenda = new JLabel("Preço de Venda: ");
 		txtPrecoVenda = new JTextField(7);
 		lblIndice = new JLabel("Indice: ");
 		btnAnexar = new JButton("Anexar Indice");
 		btnGravar = new JButton("Gravar");
 		btnPesquisar = new JButton("Pesquisar");
 
-		//Temporário
+		//TemporÃ¡rio
 		cbAutor.addItem("");
 		cbAutor.addItem("Eduardo Bezerra"); 
 		cbAutor.addItem("Katy Sierra");
