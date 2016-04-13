@@ -38,6 +38,7 @@ public class FrmCrudLivro {
 	private JTextArea txtaIndice; //Provavelmente este campo seja imagem
 	private JLabel lblArquivo;
 	private JLabel lblNomeArquivo;
+	private JLabel lblOcupaEspaco;
 	private JButton btnGravar;
 	private JButton btnAlterar;
 	private JButton btnExcluir;
@@ -75,6 +76,7 @@ public class FrmCrudLivro {
 		btnPesquisar = new JButton("Pesquisar");
 		lblArquivo = new JLabel("Arquivo: ");
 		lblNomeArquivo = new JLabel("Nenhum arquivo anexado");
+		lblOcupaEspaco = new JLabel();
 		//TemporÃ¡rio
 		cbAutor.addItem("");
 		cbAutor.addItem("Eduardo Bezerra"); 
@@ -115,6 +117,7 @@ public class FrmCrudLivro {
 		painelCentro.add( btnAnexar );
 		painelEsquerda.add( lblArquivo );
 		painelCentro.add( lblNomeArquivo );
+		painelDireita.add( lblOcupaEspaco );
 		painelDireita.add( btnPesquisar );
 		painelBotoes.add( btnGravar );
 		
@@ -135,6 +138,7 @@ public class FrmCrudLivro {
 				btnGravar, btnAnexar, btnPesquisar, lblNomeArquivo);
 		btnGravar.addActionListener(livroController);
 		btnAnexar.addActionListener(livroController);
+		btnPesquisar.addActionListener(livroController);
 	}
 	
 	public static void main(String[] args) {

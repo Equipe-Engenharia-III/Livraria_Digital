@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -34,6 +35,7 @@ public class LivroController implements ActionListener{
 	private JButton btnAnexar;
 	private JButton btnPesquisar;
 	private JLabel lblNomeArquivo;
+	private Livro oldLivro = null;
 	
 	public LivroController(JTextField txtIsbn, JTextField txtTitulo,
 			JComboBox<String> cbAutor, JTextField txtDtPublicacao,
@@ -73,7 +75,7 @@ public class LivroController implements ActionListener{
 				livro.setResumo( txtaResumo.getText() );
 				livro.setPrecoCusto( Float.parseFloat( txtPrecoCusto.getText() ) );
 				livro.setPrecoCusto( Float.parseFloat( txtPrecoVenda.getText() ) );
-				livro.setIndice( anexarPdf() );
+				livro.setIndice( anexarPdf() ); //grava o caminho completo do PDF no arquivo texto
 				daoLivro.gravarLivro(livro);
 				JOptionPane.showMessageDialog(null, "Livro gravado com sucesso!");
 				limparCampos();
@@ -99,30 +101,39 @@ public class LivroController implements ActionListener{
 	
 	public void pesquisarLivro(){
 		ManipulaArquivoLivro daoLivro = new ManipulaArquivoLivro();
-		Livro livro;
 		StringBuffer buffer = new StringBuffer();
 		try {
-			ArrayList<Livro> arrayLivro = daoLivro.lerLivro();
-			//Se a pesquisa retornar somente 1 resultado
-			if( arrayLivro.size() == 1){
-				livro = new Livro();
-				livro = arrayLivro.get(0);
-				txtIsbn.setText( livro.getIsbn() );
-				txtTitulo.setText( livro.getTitulo() );
-//				cbAutor
-				txtDtPublicacao.setText( livro.getDtPublicacao() );
-//				cbEditora
-//				cbCategoria
-				txtaResumo.setText( livro.getResumo() );
-				txtPrecoCusto.setText( Float.toString( livro.getPrecoCusto() ) );
-				txtPrecoVenda.setText( Float.toString( livro.getPrecoVenda() ) );
-//				txtaIndice
+			List<Livro> arrayLivro = new ArrayList();
+			//for each para ler o arquivo texto de livros e guardar 
+			//a informação no array daqueles que satisfazem a pesquisa
+			if( ! txtTitulo.getText().isEmpty() ) {
+				for ( Livro livro : daoLivro.lerLivro() ){
+					if ( livro.getTitulo().contains( txtTitulo.getText().toUpperCase() ) ) {
+							arrayLivro.add( livro );
+					}
+				}
+				//Trouxe mais de uma opção para pesquisa
+				if ( arrayLivro.size() > 1 ){
+					oldLivro = new Livro();
+					//abre uma JOptionPane com as opções.
+				//Trouxe apenas um resultado
+				} else if ( arrayLivro.size() == 1){
+					oldLivro = new Livro();
+					oldLivro = arrayLivro.get( 0 );
+					txtIsbn.setText( oldLivro.getIsbn() );
+					txtTitulo.setText( oldLivro.getTitulo() );
+					cbAutor.setSelectedItem( oldLivro.getAutor() ); //corrigir
+					txtDtPublicacao.setText( oldLivro.getDtPublicacao() );
+					cbEditora.setSelectedItem( oldLivro.getEditora() ); //corrigir
+					cbCategoria.setSelectedItem( oldLivro.getEditora() ); //corrigir
+					txtaResumo.setText( oldLivro.getResumo() );
+					txtPrecoCusto.setText( Float.toString( oldLivro.getPrecoCusto() ) );
+					txtPrecoVenda.setText( Float.toString( oldLivro.getPrecoVenda() ) );
+					lblNomeArquivo.setText( oldLivro.getIndice() );
+				}
 			} else {
-				//se a pesquisar retornar mais de 1 resultado
-				//abre um JOptionPane com as op趥s
-				livro = new Livro();
+				JOptionPane.showMessageDialog(null, "Digite algum título para pesquisar");
 			}
-			alterarLivro(livro);
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null, "Houve um problema com a alteração do livro. \n"
 					+ "Contate o administrador do sistema! \n Descrição Técnica: " + e.getMessage());
@@ -143,7 +154,7 @@ public class LivroController implements ActionListener{
 			newLivro.setResumo( txtaResumo.getText() );
 			newLivro.setPrecoCusto( Float.parseFloat( txtPrecoCusto.getText() ) );
 			newLivro.setPrecoCusto( Float.parseFloat( txtPrecoVenda.getText() ) );
-//			newLivro.setIndice(  );
+			newLivro.setIndice( anexarPdf() );
 			daoLivro.atualizarLivro(oldLivro, newLivro);
 		}
 		
@@ -229,7 +240,7 @@ public class LivroController implements ActionListener{
 		if( source == btnGravar ){
 			//Se o pesquisar foi pressionado, então o metodo alterarLivro precisa ser chamado
 			if( pesquisarPressionado ){
-				pesquisarLivro();
+				alterarLivro(oldLivro);
 			} else {
 				gravarLivro();
 			}
@@ -238,6 +249,7 @@ public class LivroController implements ActionListener{
 		//Se o botão pesquisar foi pressionado, o botao gravar muda sua função
 		if( source == btnPesquisar ){
 			pesquisarPressionado = true;
+			pesquisarLivro();
 		}
 		if( source == btnAnexar ){
 			anexarPdf();
