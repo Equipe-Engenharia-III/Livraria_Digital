@@ -2,15 +2,19 @@ package controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import dao.ManipulaArquivoLivro;
 import entity.Livro;
@@ -29,13 +33,15 @@ public class LivroController implements ActionListener{
 	private JButton btnGravar;
 	private JButton btnAnexar;
 	private JButton btnPesquisar;
+	private JLabel lblNomeArquivo;
 	
 	public LivroController(JTextField txtIsbn, JTextField txtTitulo,
 			JComboBox<String> cbAutor, JTextField txtDtPublicacao,
 			JComboBox<String> cbEditora, JComboBox<String> cbCategoria,
 			JTextArea txtaResumo, JTextField txtPrecoCusto, 
 			JTextField txtPrecoVenda, JTextArea txtaIndice,
-			JButton btnGravar, JButton btnAnexar, JButton btnPesquisar){
+			JButton btnGravar, JButton btnAnexar, JButton btnPesquisar,
+			JLabel lblNomeArquivo){
 		
 		this.txtIsbn = txtIsbn;
 		this.btnPesquisar = btnPesquisar;
@@ -50,6 +56,7 @@ public class LivroController implements ActionListener{
 		this.txtaIndice = txtaIndice;
 		this.btnAnexar = btnAnexar;
 		this.btnGravar = btnGravar;
+		this.lblNomeArquivo = lblNomeArquivo;
 	}
 	
 	public void gravarLivro(){
@@ -66,7 +73,7 @@ public class LivroController implements ActionListener{
 				livro.setResumo( txtaResumo.getText() );
 				livro.setPrecoCusto( Float.parseFloat( txtPrecoCusto.getText() ) );
 				livro.setPrecoCusto( Float.parseFloat( txtPrecoVenda.getText() ) );
-//				livro.setIndice(  );
+				livro.setIndice( anexarPdf() );
 				daoLivro.gravarLivro(livro);
 				JOptionPane.showMessageDialog(null, "Livro gravado com sucesso!");
 				limparCampos();
@@ -87,8 +94,9 @@ public class LivroController implements ActionListener{
 		txtaResumo.setText("");;
 		txtPrecoCusto.setText("");
 		txtPrecoVenda.setText("");
+		lblNomeArquivo.setText("Nenhum Arquivo Anexado!");
 	}
-	//Talvez posso aproveitar o metodo procurarLivro() da classe PesquisaController
+	
 	public void pesquisarLivro(){
 		ManipulaArquivoLivro daoLivro = new ManipulaArquivoLivro();
 		Livro livro;
@@ -111,6 +119,7 @@ public class LivroController implements ActionListener{
 //				txtaIndice
 			} else {
 				//se a pesquisar retornar mais de 1 resultado
+				//abre um JOptionPane com as op趥s
 				livro = new Livro();
 			}
 			alterarLivro(livro);
@@ -179,10 +188,33 @@ public class LivroController implements ActionListener{
 		} else{
 			mensagem.append("Preco Venda, ");
 		}
+		if ( lblNomeArquivo.getText().contains("Nenhum") ){
+			mensagem.append("Indice, ");
+		}
 		if( mensagem.length() > 0){
 			return false;
 		}
 		return true;
+	}
+	
+	public String anexarPdf(){
+		FileNameExtensionFilter filtro = new FileNameExtensionFilter("Arquivo PDF", "pdf");
+		String diretorioBase = System.getProperty("user.home") + "/Desktop";
+		File dir = new File(diretorioBase);
+		JFileChooser choose = new JFileChooser();
+		choose.setCurrentDirectory(dir);
+		choose.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		choose.setAcceptAllFileFilterUsed(false);
+		choose.addChoosableFileFilter(filtro);
+		String caminhoCompletoArquivo = "";
+		String nomeArquivo = "";
+		int retorno = choose.showOpenDialog(null);
+		if( retorno == JFileChooser.APPROVE_OPTION ){
+			caminhoCompletoArquivo = choose.getSelectedFile().getAbsolutePath();
+			nomeArquivo = choose.getSelectedFile().getName();
+			lblNomeArquivo.setText( nomeArquivo );
+		}
+		return caminhoCompletoArquivo;
 	}
 	
 	
@@ -194,7 +226,7 @@ public class LivroController implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource(); //verifica qual botão está solicitando a ação
 		boolean pesquisarPressionado = false;
-		if(source == btnGravar){
+		if( source == btnGravar ){
 			//Se o pesquisar foi pressionado, então o metodo alterarLivro precisa ser chamado
 			if( pesquisarPressionado ){
 				pesquisarLivro();
@@ -204,8 +236,11 @@ public class LivroController implements ActionListener{
 			return;
 		}
 		//Se o botão pesquisar foi pressionado, o botao gravar muda sua função
-		if(source == btnPesquisar){
+		if( source == btnPesquisar ){
 			pesquisarPressionado = true;
+		}
+		if( source == btnAnexar ){
+			anexarPdf();
 		}
 	}
 }

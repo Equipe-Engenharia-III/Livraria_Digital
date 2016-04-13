@@ -36,8 +36,7 @@ public class ManipulaArquivoLivro {
 		buffer.append("\r\n");
 		buffer.append(Float.toString(livro.getPrecoVenda()));
 		buffer.append("\r\n");
-//		buffer.append(livro.getIndice());
-		buffer.append("Indice");
+		buffer.append( livro.getIndice() );
 		buffer.append("\r\n");
 		buffer.append("---");//Separador de livros - Utilizado no metodo atualizarLivro() desta classe
 		
@@ -76,8 +75,7 @@ public class ManipulaArquivoLivro {
 				livro.setResumo( leitor.readLine() );
 				livro.setPrecoCusto( Float.parseFloat( leitor.readLine() ) );
 				livro.setPrecoVenda( Float.parseFloat( leitor.readLine() ) );
-//				livro.setIndice( leitor.readLine() );
-				leitor.readLine(); //Futuro indice
+				livro.setIndice( leitor.readLine() );
 				leitor.readLine(); //linha que separa os livros
 				linha = leitor.readLine();
 				arrayLivro.add(livro);
@@ -128,8 +126,9 @@ public class ManipulaArquivoLivro {
 				if( leitor.readLine().equals( oldLivro.getPrecoVenda() ) ){
 					gravaDados.append( Float.toString( newLivro.getPrecoVenda() ) );
 				}
-//				livro.setIndice( leitor.readLine() );
-				leitor.readLine(); //Futuro indice
+				if( leitor.readLine().equals( oldLivro.getIndice() ) ){
+					gravaDados.append( newLivro.getIndice() );
+				}
 				leitor.readLine(); //linha que separa os livros
 				linha = leitor.readLine();
 			}
