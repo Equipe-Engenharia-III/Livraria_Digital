@@ -23,7 +23,7 @@ public class FrmListaLivros {
 	
 	public FrmListaLivros(String parametro, String pesquisa, List<Livro> livro) {
 		String columnNames[] = {"TITULO", "AUTOR",
-				"PREÇO", "DETALHES DO LIVRO", "ADD CARRINHO"};
+				"PRECO", "DETALHES DO LIVRO", "ADD CARRINHO"};
 		int size = 0;
 		JPanel panelPrincipal = new JPanel();
 		janelaListaLivros = new JFrame("Resultado da pesquisa por " 
@@ -43,9 +43,9 @@ public class FrmListaLivros {
 		for(int i = 0; i < livro.size(); i++){
 			tblModel.setValueAt(livro.get(i).getTitulo(), i, 0); //Titulo
 			tblModel.setValueAt(livro.get(i).getAutor(), i, 1);  //Autor
-			tblModel.setValueAt(livro.get(i).getPrecoVenda(), i, 2); //Preço
-			tblModel.setValueAt(btnDetalhesLivro[i], i, 3); //Mostrar a imagem do botão
-			tblModel.setValueAt(btnAddCarrinho[i], i, 4);//Mostrar a imagem do botão
+			tblModel.setValueAt(livro.get(i).getPrecoVenda(), i, 2); //Preco
+			tblModel.setValueAt(btnDetalhesLivro[i], i, 3); //Mostrar a imagem do botao
+			tblModel.setValueAt(btnAddCarrinho[i], i, 4);//Mostrar a imagem do botao
 		}
 		tblListaLivros.setModel(tblModel);
 		scrollPane.add(tblListaLivros);

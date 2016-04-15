@@ -34,8 +34,10 @@ public class LivroController implements ActionListener{
 	private JButton btnGravar;
 	private JButton btnAnexar;
 	private JButton btnPesquisar;
+	private JButton btnExcluir;
 	private JLabel lblNomeArquivo;
 	private Livro oldLivro = null;
+	private static boolean pesquisarPressionado = false;
 	
 	public LivroController(JTextField txtIsbn, JTextField txtTitulo,
 			JComboBox<String> cbAutor, JTextField txtDtPublicacao,
@@ -43,7 +45,7 @@ public class LivroController implements ActionListener{
 			JTextArea txtaResumo, JTextField txtPrecoCusto, 
 			JTextField txtPrecoVenda, JTextArea txtaIndice,
 			JButton btnGravar, JButton btnAnexar, JButton btnPesquisar,
-			JLabel lblNomeArquivo){
+			JLabel lblNomeArquivo, JButton btnExcluir){
 		
 		this.txtIsbn = txtIsbn;
 		this.btnPesquisar = btnPesquisar;
@@ -59,6 +61,7 @@ public class LivroController implements ActionListener{
 		this.btnAnexar = btnAnexar;
 		this.btnGravar = btnGravar;
 		this.lblNomeArquivo = lblNomeArquivo;
+		this.btnExcluir = btnExcluir;
 	}
 	
 	public void gravarLivro(){
@@ -75,13 +78,12 @@ public class LivroController implements ActionListener{
 				livro.setResumo( txtaResumo.getText() );
 				livro.setPrecoCusto( Float.parseFloat( txtPrecoCusto.getText() ) );
 				livro.setPrecoCusto( Float.parseFloat( txtPrecoVenda.getText() ) );
-				livro.setIndice( anexarPdf() ); //grava o caminho completo do PDF no arquivo texto
+				livro.setIndice( lblNomeArquivo.getText() ); //grava o caminho completo do PDF no arquivo texto
 				daoLivro.gravarLivro(livro);
 				JOptionPane.showMessageDialog(null, "Livro gravado com sucesso!");
-				limparCampos();
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, "Houve um problema com a gravação do livro. \n"
-							+ "Contate o administrador do sistema! \n Descrição Técnica: " + e.getMessage());
+				JOptionPane.showMessageDialog(null, "Houve um problema com a gravacao do livro. \n"
+							+ "Contate o administrador do sistema! \n Descricao Tecnica: " + e.getMessage());
 			}
 		}
 	}
@@ -105,38 +107,72 @@ public class LivroController implements ActionListener{
 		try {
 			List<Livro> arrayLivro = new ArrayList();
 			//for each para ler o arquivo texto de livros e guardar 
-			//a informação no array daqueles que satisfazem a pesquisa
+			//a informacao no array daqueles que satisfazem a pesquisa
 			if( ! txtTitulo.getText().isEmpty() ) {
 				for ( Livro livro : daoLivro.lerLivro() ){
 					if ( livro.getTitulo().contains( txtTitulo.getText().toUpperCase() ) ) {
 							arrayLivro.add( livro );
 					}
 				}
-				//Trouxe mais de uma opção para pesquisa
+				//Trouxe mais de uma opcao para pesquisa
+				//abre uma JOptionPane com as opcoes.
 				if ( arrayLivro.size() > 1 ){
 					oldLivro = new Livro();
-					//abre uma JOptionPane com as opções.
+					Object[] possibilities = new Object[ arrayLivro.size() ];
+					for( int i = 0; i < arrayLivro.size(); i++ ){
+						possibilities[i] = new Object();
+						possibilities[i] = arrayLivro.get( i ).getTitulo();
+					}
+				    String s = (String) JOptionPane.showInputDialog(null, "Escolha o livro:\n", "A pesquisa "
+				    		+ "retornou mais de 1 resultado",JOptionPane.INFORMATION_MESSAGE, 
+				    		null, possibilities, possibilities[0]);
+					if (s != null && s.length() > 0) {
+						for(int i = 0; i < arrayLivro.size(); i++){
+							if ( arrayLivro.get( i ).getTitulo().equals( s ) ){
+								oldLivro = arrayLivro.get( i );
+							}
+						}
+					}
+				}
 				//Trouxe apenas um resultado
-				} else if ( arrayLivro.size() == 1){
+				else if ( arrayLivro.size() == 1){
 					oldLivro = new Livro();
 					oldLivro = arrayLivro.get( 0 );
+				}
+				if(oldLivro != null){
 					txtIsbn.setText( oldLivro.getIsbn() );
 					txtTitulo.setText( oldLivro.getTitulo() );
-					cbAutor.setSelectedItem( oldLivro.getAutor() ); //corrigir
+					//Faz uma compara��o com os itens que est�o na lista
+					//para setar o item que ir� ser apresentada na combo
+					for( int i = 0; i < cbAutor.getItemCount(); i++){
+						if ( cbAutor.getItemAt( i ).toUpperCase().equals( oldLivro.getAutor().toUpperCase() ) ){
+							cbAutor.setSelectedIndex( i );
+						}
+					}
 					txtDtPublicacao.setText( oldLivro.getDtPublicacao() );
-					cbEditora.setSelectedItem( oldLivro.getEditora() ); //corrigir
-					cbCategoria.setSelectedItem( oldLivro.getEditora() ); //corrigir
+					for( int i = 0; i < cbEditora.getItemCount(); i++){
+						if ( cbEditora.getItemAt( i ).toUpperCase().equals( oldLivro.getEditora().toUpperCase() ) ){
+							cbEditora.setSelectedIndex( i );
+						}
+					}
+					for( int i = 0; i < cbCategoria.getItemCount(); i++){
+						if ( cbCategoria.getItemAt( i ).toUpperCase().equals( oldLivro.getCategoria().toUpperCase() ) ){
+							cbCategoria.setSelectedIndex( i );
+						}
+					}
 					txtaResumo.setText( oldLivro.getResumo() );
 					txtPrecoCusto.setText( Float.toString( oldLivro.getPrecoCusto() ) );
 					txtPrecoVenda.setText( Float.toString( oldLivro.getPrecoVenda() ) );
 					lblNomeArquivo.setText( oldLivro.getIndice() );
+				} else{
+					JOptionPane.showMessageDialog(null, "A pesquisa n�o encontrou nenhum resultado!");
 				}
 			} else {
-				JOptionPane.showMessageDialog(null, "Digite algum título para pesquisar");
+				JOptionPane.showMessageDialog(null, "Digite algum titulo para pesquisar");
 			}
 		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(null, "Houve um problema com a alteração do livro. \n"
-					+ "Contate o administrador do sistema! \n Descrição Técnica: " + e.getMessage());
+			JOptionPane.showMessageDialog(null, "Houve um problema com a alteracao do livro. \n"
+					+ "Contate o administrador do sistema! \n Descricao Tecnica: " + e.getMessage());
 		}
 	}
 	public void alterarLivro(Livro oldLivro){
@@ -153,8 +189,8 @@ public class LivroController implements ActionListener{
 			newLivro.setCategoria( cbCategoria.getSelectedItem().toString() );
 			newLivro.setResumo( txtaResumo.getText() );
 			newLivro.setPrecoCusto( Float.parseFloat( txtPrecoCusto.getText() ) );
-			newLivro.setPrecoCusto( Float.parseFloat( txtPrecoVenda.getText() ) );
-			newLivro.setIndice( anexarPdf() );
+			newLivro.setPrecoVenda( Float.parseFloat( txtPrecoVenda.getText() ) );
+			newLivro.setIndice( lblNomeArquivo.getText() );
 			daoLivro.atualizarLivro(oldLivro, newLivro);
 		}
 		
@@ -162,7 +198,7 @@ public class LivroController implements ActionListener{
 	public boolean validaCampos(){
 		boolean isValido = false;
 		StringBuffer mensagem = new StringBuffer();
-		//Verifica se os campos estão vazios
+		//Verifica se os campos estao vazios
 		if(txtIsbn.getText().isEmpty() ){
 			mensagem.append("ISBN, ");
 		} 
@@ -203,12 +239,12 @@ public class LivroController implements ActionListener{
 			mensagem.append("Indice, ");
 		}
 		if( mensagem.length() > 0){
+			JOptionPane.showMessageDialog(null, "Preencha os campos: " + mensagem.toString());
 			return false;
 		}
 		return true;
 	}
-	
-	public String anexarPdf(){
+	public void anexarPdf(){
 		FileNameExtensionFilter filtro = new FileNameExtensionFilter("Arquivo PDF", "pdf");
 		String diretorioBase = System.getProperty("user.home") + "/Desktop";
 		File dir = new File(diretorioBase);
@@ -225,34 +261,53 @@ public class LivroController implements ActionListener{
 			nomeArquivo = choose.getSelectedFile().getName();
 			lblNomeArquivo.setText( nomeArquivo );
 		}
-		return caminhoCompletoArquivo;
 	}
-	
-	
-//	public Livro excluirLivro(){
-//		//TODO
-//	}
-
+	public void excluirLivro(){
+		ManipulaArquivoLivro daoLivro = new ManipulaArquivoLivro();
+		Livro oldLivro = new Livro();
+		if ( validaCampos() ){
+			oldLivro.setIsbn( txtIsbn.getText() );
+			oldLivro.setTitulo( txtTitulo.getText() );
+			oldLivro.setAutor( cbAutor.getSelectedItem().toString().toUpperCase() );
+			oldLivro.setDtPublicacao( txtDtPublicacao.getText() );
+			oldLivro.setEditora( cbEditora.getSelectedItem().toString().toUpperCase() );
+			oldLivro.setCategoria( cbCategoria.getSelectedItem().toString().toUpperCase() );
+			oldLivro.setResumo( txtaResumo.getText() );
+			oldLivro.setPrecoCusto( Float.parseFloat( txtPrecoCusto.getText() ) );
+			oldLivro.setPrecoVenda( Float.parseFloat( txtPrecoVenda.getText() ) );
+			oldLivro.setIndice( lblNomeArquivo.getText() );
+			daoLivro.excluirLivro(oldLivro);
+			JOptionPane.showMessageDialog(null, "Livro: " + oldLivro.getTitulo() + " excluido com sucesso!");
+		}
+	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource(); //verifica qual botão está solicitando a ação
-		boolean pesquisarPressionado = false;
+		Object source = e.getSource(); //verifica qual botaoo esta solicitando a acao
 		if( source == btnGravar ){
-			//Se o pesquisar foi pressionado, então o metodo alterarLivro precisa ser chamado
+			//Se o pesquisar foi pressionado, entao o metodo alterarLivro precisa ser chamado
 			if( pesquisarPressionado ){
 				alterarLivro(oldLivro);
+				pesquisarPressionado = false;
 			} else {
+				btnExcluir.setEnabled( false );
 				gravarLivro();
 			}
+			limparCampos();
 			return;
 		}
-		//Se o botão pesquisar foi pressionado, o botao gravar muda sua função
+		//Se o botao pesquisar foi pressionado, o botao gravar muda sua funcao
 		if( source == btnPesquisar ){
 			pesquisarPressionado = true;
 			pesquisarLivro();
+			btnExcluir.setEnabled( true ); //se o botao pesquisar foi pressionado o excluir tambem fica habilitado
 		}
 		if( source == btnAnexar ){
 			anexarPdf();
+		}
+		if( source == btnExcluir ){
+			excluirLivro();
+			btnExcluir.setEnabled( false );
+			limparCampos();
 		}
 	}
 }

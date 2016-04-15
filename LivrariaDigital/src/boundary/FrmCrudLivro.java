@@ -77,6 +77,8 @@ public class FrmCrudLivro {
 		lblArquivo = new JLabel("Arquivo: ");
 		lblNomeArquivo = new JLabel("Nenhum arquivo anexado");
 		lblOcupaEspaco = new JLabel();
+		btnExcluir = new JButton("Excluir");
+		btnExcluir.setEnabled( false );
 		//TemporÃ¡rio
 		cbAutor.addItem("");
 		cbAutor.addItem("Eduardo Bezerra"); 
@@ -120,6 +122,7 @@ public class FrmCrudLivro {
 		painelDireita.add( lblOcupaEspaco );
 		painelDireita.add( btnPesquisar );
 		painelBotoes.add( btnGravar );
+		painelBotoes.add( btnExcluir );
 		
 		painelPrincipal.add( painelCentro, BorderLayout.CENTER );
 		painelPrincipal.add( painelBotoes, BorderLayout.SOUTH );
@@ -135,10 +138,12 @@ public class FrmCrudLivro {
 		LivroController livroController = new LivroController(txtIsbn, txtTitulo, 
 				cbAutor, txtDtPublicacao, cbEditora, cbCategoria, 
 				txtaResumo, txtPrecoCusto, txtPrecoVenda, txtaIndice, 
-				btnGravar, btnAnexar, btnPesquisar, lblNomeArquivo);
+				btnGravar, btnAnexar, btnPesquisar, lblNomeArquivo,
+				btnExcluir);
 		btnGravar.addActionListener(livroController);
 		btnAnexar.addActionListener(livroController);
 		btnPesquisar.addActionListener(livroController);
+		btnExcluir.addActionListener(livroController);
 	}
 	
 	public static void main(String[] args) {

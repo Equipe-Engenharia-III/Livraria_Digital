@@ -55,7 +55,7 @@ public class ManipulaArquivoLivro {
 		gravaDados.flush();
 		gravaDados.close();
 		escreveArquivo.close();
- }
+    }
 	
 	public ArrayList<Livro> lerLivro() throws FileNotFoundException{
 		String fileName = "regLivro.txt";
@@ -89,50 +89,148 @@ public class ManipulaArquivoLivro {
 	public void atualizarLivro(Livro oldLivro, Livro newLivro){
 		String fileName = "regLivro.txt";
 		try {
+			Float valores = 0.0f;
+			StringBuffer buffer = new StringBuffer();
 			BufferedReader leitor = new BufferedReader(new FileReader( fileName ));
 			File arq = new File( fileName );
-			FileWriter escreveArquivo;
-			escreveArquivo = new FileWriter(arq, true); //arquivo deve existir
-	        PrintWriter gravaDados = new PrintWriter(escreveArquivo);
-			String linha = leitor.readLine(); //LÃª o ISBN
+			String linha = leitor.readLine(); //Le o ISBN
 			while( linha != null ){
 				//sobrescreve o ISBN caso ele tenha sido alterado
 				if( linha.equals( oldLivro.getIsbn() ) ){
-					gravaDados.append( newLivro.getIsbn() );
+					buffer.append( newLivro.getIsbn() );
+					System.out.println("Old ISBN: " + oldLivro.getIsbn() + "\nNew ISBN: " + newLivro.getIsbn());
+				} else {
+					buffer.append(linha); 
 				}
-				//LÃª a proxima linha e verifica se o titulo foi alterado
-				if( leitor.readLine().equals( oldLivro.getTitulo() ) ){
-					gravaDados.append( newLivro.getTitulo() );
-				}
-				//LÃª a proxima linha e verifica se o Autor foi alterado e assim por diante...
-				if( leitor.readLine().equals( oldLivro.getAutor() ) ){
-					gravaDados.append( newLivro.getAutor() );
-				}
-				if( leitor.readLine().equals( oldLivro.getDtPublicacao() ) ){
-					gravaDados.append( newLivro.getDtPublicacao() );
-				}
-				if( leitor.readLine().equals( oldLivro.getEditora() ) ){
-					gravaDados.append( newLivro.getEditora() );
-				}
-				if( leitor.readLine().equals( oldLivro.getCategoria() ) ){
-					gravaDados.append( newLivro.getCategoria() );
-				}
-				if( leitor.readLine().equals( oldLivro.getResumo() ) ){
-					gravaDados.append( newLivro.getResumo() );
-				}
-				if( leitor.readLine().equals( oldLivro.getPrecoCusto() ) ){
-					gravaDados.append( Float.toString( newLivro.getPrecoCusto() ) );
-				}
-				if( leitor.readLine().equals( oldLivro.getPrecoVenda() ) ){
-					gravaDados.append( Float.toString( newLivro.getPrecoVenda() ) );
-				}
-				if( leitor.readLine().equals( oldLivro.getIndice() ) ){
-					gravaDados.append( newLivro.getIndice() );
-				}
-				leitor.readLine(); //linha que separa os livros
+				buffer.append("\r\n");
 				linha = leitor.readLine();
+				//verifica se o titulo foi alterado
+				if( linha.equals( oldLivro.getTitulo() ) ){
+					buffer.append( newLivro.getTitulo() );
+					System.out.println("Old Titulo: " + oldLivro.getTitulo() + "\nNew Titulo: " + newLivro.getTitulo());
+				} else {
+					buffer.append(linha); //corrigir
+				}
+				buffer.append("\r\n");
+				linha = leitor.readLine();
+				//Le a proxima linha e verifica se o Autor foi alterado e assim por diante...
+				if( linha.equals( oldLivro.getAutor() ) ){
+					buffer.append( newLivro.getAutor() );
+				} else {
+					buffer.append(linha);
+				}
+				buffer.append("\r\n");
+				linha = leitor.readLine();
+				if( linha.equals( oldLivro.getDtPublicacao() ) ){
+					buffer.append( newLivro.getDtPublicacao() );
+				} else {
+					buffer.append(linha);
+				}
+				buffer.append("\r\n");
+				linha = leitor.readLine();
+				if( linha.equals( oldLivro.getEditora() ) ){
+					buffer.append( newLivro.getEditora() );
+				} else {
+					buffer.append(linha);
+				}
+				buffer.append("\r\n");
+				linha = leitor.readLine();
+				if( linha.equals( oldLivro.getCategoria() ) ){
+					buffer.append( newLivro.getCategoria() );
+				} else {
+					buffer.append(linha);
+				}
+				buffer.append("\r\n");
+				linha = leitor.readLine();
+				if( linha.equals( oldLivro.getResumo() ) ){
+					buffer.append( newLivro.getResumo() );
+				} else {
+					buffer.append(linha);
+				}
+				buffer.append("\r\n");
+				linha = leitor.readLine();
+				valores = Float.parseFloat( linha );
+				if( valores.equals( oldLivro.getPrecoCusto() ) ){
+					buffer.append( Float.toString( newLivro.getPrecoCusto() ) );
+				} else {
+					buffer.append(linha);
+				}
+				buffer.append("\r\n");
+				linha = leitor.readLine();
+				valores = Float.parseFloat( linha );
+				if( valores.equals( oldLivro.getPrecoVenda() ) ){
+					buffer.append( Float.toString( newLivro.getPrecoVenda() ) );
+				} else {
+					buffer.append(linha);
+				}
+				buffer.append("\r\n");
+				linha = leitor.readLine();
+				if( linha.equals( oldLivro.getIndice() ) ){
+					buffer.append( newLivro.getIndice() );
+				} else {
+					buffer.append(linha);
+				}
+				buffer.append("\r\n");
+				linha = leitor.readLine(); //linha que separa os livros
+				buffer.append(linha);
+				buffer.append("\r\n");
+				linha = leitor.readLine(); //le o proximo ISBN
 			}
-			gravaDados.flush();
+			FileWriter escreveArquivo;
+			escreveArquivo = new FileWriter(arq, false); //cria um novo arquivo com as atualizações
+	        PrintWriter gravaDados = new PrintWriter(escreveArquivo);
+			gravaDados.write(buffer.toString());
+	        gravaDados.flush();
+			gravaDados.close();
+			escreveArquivo.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void excluirLivro(Livro oldLivro){
+		String fileName = "regLivro.txt";
+		try {
+			boolean flag = false;
+			Float valores = 0.0f;
+			StringBuffer buffer = new StringBuffer();
+			BufferedReader leitor = new BufferedReader(new FileReader( fileName ));
+			File arq = new File( fileName );
+			
+			String linha = leitor.readLine(); //Le o ISBN
+			while( linha != null ){
+				if( ! linha.equals( oldLivro.getIsbn() ) ){
+					buffer.append(linha);
+					buffer.append("\r\n");
+				} else {
+					flag = true;
+				}
+				if ( !flag ){
+					int i = 0;
+					while(i < 10){
+						linha = leitor.readLine();
+						buffer.append(linha);  
+						buffer.append("\r\n");
+						i++;
+					}
+				} else {
+					int i = 0;
+					while(i < 10){
+						linha = leitor.readLine(); 
+						i++;
+						flag = false;
+					}
+				}
+				linha = leitor.readLine(); //le o proximo ISBN
+			}
+			
+			FileWriter escreveArquivo;
+			escreveArquivo = new FileWriter(arq, false); //cria um novo arquivo com as atualizações
+	        PrintWriter gravaDados = new PrintWriter(escreveArquivo);
+			gravaDados.write(buffer.toString());
+	        gravaDados.flush();
 			gravaDados.close();
 			escreveArquivo.close();
 		} catch (FileNotFoundException e) {

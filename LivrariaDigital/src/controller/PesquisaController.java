@@ -70,16 +70,6 @@ public class PesquisaController implements ActionListener {
 			} else {
 				JOptionPane.showMessageDialog(janelaPesquisa, "Digite algo ou escolha uma opção!");
 			}
-			
-			//Somente para teste
-			//Titulo, Autor, Preço, detalhes, add carinho
-			for( Livro livro : listLivros ){
-				System.out.println("Titulo: " + livro.getTitulo());
-				System.out.println("Autor: " + livro.getAutor());
-				System.out.println("Preço: " + livro.getPrecoVenda());
-				System.out.println("DETALHES");
-				System.out.println("ADD CARINHO");
-			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
