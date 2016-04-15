@@ -13,30 +13,25 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import controller.ButtonColumn;
+
 public class FrmListaLivros {
 	private JFrame janelaListaLivros;
 	private JTable tblListaLivros;
-	private JButton btnDetalhesLivro[];
-	private JButton btnAddCarrinho[];
 	private DefaultTableModel tblModel;
 	private JScrollPane scrollPane;
+	private ButtonColumn btnColumnDetalhesLivro;
+	private ButtonColumn btnColumnAddCarrinho;
 	
 	public FrmListaLivros(String parametro, String pesquisa, List<Livro> livro) {
 		String columnNames[] = {"TITULO", "AUTOR",
-				"PRECO", "DETALHES DO LIVRO", "ADD CARRINHO"};
+				"PREÃ‡O", "DETALHES DO LIVRO", "ADD CARRINHO"};
 		int size = 0;
 		JPanel panelPrincipal = new JPanel();
 		janelaListaLivros = new JFrame("Resultado da pesquisa por " 
 		+ parametro + " - " + pesquisa);
 		tblModel = new DefaultTableModel();
-		tblListaLivros = new JTable();
-		btnAddCarrinho = new JButton[livro.size()];
-		btnDetalhesLivro = new JButton[livro.size()];
 		scrollPane = new JScrollPane();
-		for(int i = 0; i < livro.size(); i++){
-			btnAddCarrinho[i] = new JButton("ADD CARINHO");
-			btnDetalhesLivro[i] = new JButton("DETALHES");
-		}
 		tblModel.setColumnIdentifiers(columnNames);
 		size = tblModel.getRowCount();
 		tblModel.setRowCount(size + livro.size());
@@ -44,10 +39,12 @@ public class FrmListaLivros {
 			tblModel.setValueAt(livro.get(i).getTitulo(), i, 0); //Titulo
 			tblModel.setValueAt(livro.get(i).getAutor(), i, 1);  //Autor
 			tblModel.setValueAt(livro.get(i).getPrecoVenda(), i, 2); //Preco
-			tblModel.setValueAt(btnDetalhesLivro[i], i, 3); //Mostrar a imagem do botao
-			tblModel.setValueAt(btnAddCarrinho[i], i, 4);//Mostrar a imagem do botao
+			tblModel.setValueAt("Detalhes do Livro", i, 3); //Mostrar a imagem do botao
+			tblModel.setValueAt("Add ao Carrinho", i, 4);//Mostrar a imagem do botao
 		}
-		tblListaLivros.setModel(tblModel);
+		tblListaLivros = new JTable(tblModel);
+		btnColumnDetalhesLivro = new ButtonColumn(tblListaLivros, null, 3); //mudar o null para o nome da ação
+		btnColumnAddCarrinho = new ButtonColumn(tblListaLivros, null, 4); //mudar o null para o nome da ação corresponde
 		scrollPane.add(tblListaLivros);
 		scrollPane.setHorizontalScrollBar(new JScrollBar());
 		panelPrincipal.setLayout( new BorderLayout() );
