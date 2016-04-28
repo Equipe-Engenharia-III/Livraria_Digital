@@ -139,7 +139,7 @@ public class FrmCrudLivro {
 				cbAutor, txtDtPublicacao, cbEditora, cbCategoria, 
 				txtaResumo, txtPrecoCusto, txtPrecoVenda, txtaIndice, 
 				btnGravar, btnAnexar, btnPesquisar, lblNomeArquivo,
-				btnExcluir);
+				btnExcluir, janelaLivro);
 		btnGravar.addActionListener(livroController);
 		btnAnexar.addActionListener(livroController);
 		btnPesquisar.addActionListener(livroController);
