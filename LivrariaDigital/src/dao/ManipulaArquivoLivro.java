@@ -55,7 +55,7 @@ public class ManipulaArquivoLivro {
 		gravaDados.flush();
 		gravaDados.close();
 		escreveArquivo.close();
-    }
+ }
 	
 	public ArrayList<Livro> lerLivro() throws FileNotFoundException{
 		String fileName = "regLivro.txt";
@@ -113,7 +113,7 @@ public class ManipulaArquivoLivro {
 				}
 				buffer.append("\r\n");
 				linha = leitor.readLine();
-				//Le a proxima linha e verifica se o Autor foi alterado e assim por diante...
+				//Lê a proxima linha e verifica se o Autor foi alterado e assim por diante...
 				if( linha.equals( oldLivro.getAutor() ) ){
 					buffer.append( newLivro.getAutor() );
 				} else {
@@ -211,14 +211,14 @@ public class ManipulaArquivoLivro {
 					int i = 0;
 					while(i < 10){
 						linha = leitor.readLine();
-						buffer.append(linha);  
+						buffer.append(linha);  //problemas
 						buffer.append("\r\n");
 						i++;
 					}
 				} else {
 					int i = 0;
 					while(i < 10){
-						linha = leitor.readLine(); 
+						linha = leitor.readLine(); //problemas
 						i++;
 						flag = false;
 					}
