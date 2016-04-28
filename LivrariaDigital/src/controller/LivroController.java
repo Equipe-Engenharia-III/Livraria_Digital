@@ -11,6 +11,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -38,6 +39,7 @@ public class LivroController implements ActionListener{
 	private JLabel lblNomeArquivo;
 	private Livro oldLivro = null;
 	private static boolean pesquisarPressionado = false;
+	private JFrame janelaLivro;
 	
 	public LivroController(JTextField txtIsbn, JTextField txtTitulo,
 			JComboBox<String> cbAutor, JTextField txtDtPublicacao,
@@ -45,7 +47,7 @@ public class LivroController implements ActionListener{
 			JTextArea txtaResumo, JTextField txtPrecoCusto, 
 			JTextField txtPrecoVenda, JTextArea txtaIndice,
 			JButton btnGravar, JButton btnAnexar, JButton btnPesquisar,
-			JLabel lblNomeArquivo, JButton btnExcluir){
+			JLabel lblNomeArquivo, JButton btnExcluir, JFrame janelaLivro){
 		
 		this.txtIsbn = txtIsbn;
 		this.btnPesquisar = btnPesquisar;
@@ -62,8 +64,8 @@ public class LivroController implements ActionListener{
 		this.btnGravar = btnGravar;
 		this.lblNomeArquivo = lblNomeArquivo;
 		this.btnExcluir = btnExcluir;
+		this.janelaLivro = janelaLivro;
 	}
-	
 	public void gravarLivro(){
 		Livro livro = new Livro();
 		ManipulaArquivoLivro daoLivro = new ManipulaArquivoLivro();
@@ -80,14 +82,14 @@ public class LivroController implements ActionListener{
 				livro.setPrecoCusto( Float.parseFloat( txtPrecoVenda.getText() ) );
 				livro.setIndice( lblNomeArquivo.getText() ); //grava o caminho completo do PDF no arquivo texto
 				daoLivro.gravarLivro(livro);
-				JOptionPane.showMessageDialog(null, "Livro gravado com sucesso!");
+				limparCampos();
+				JOptionPane.showMessageDialog(janelaLivro, "Livro gravado com sucesso!");
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, "Houve um problema com a gravacao do livro. \n"
+				JOptionPane.showMessageDialog(janelaLivro, "Houve um problema com a gravacao do livro. \n"
 							+ "Contate o administrador do sistema! \n Descricao Tecnica: " + e.getMessage());
 			}
 		}
 	}
-	
 	private void limparCampos(){
 		txtIsbn.setText("");
 		txtTitulo.setText("");
@@ -100,10 +102,10 @@ public class LivroController implements ActionListener{
 		txtPrecoVenda.setText("");
 		lblNomeArquivo.setText("Nenhum Arquivo Anexado!");
 	}
-	
 	public void pesquisarLivro(){
 		ManipulaArquivoLivro daoLivro = new ManipulaArquivoLivro();
 		StringBuffer buffer = new StringBuffer();
+		oldLivro = null;
 		try {
 			List<Livro> arrayLivro = new ArrayList();
 			//for each para ler o arquivo texto de livros e guardar 
@@ -123,7 +125,7 @@ public class LivroController implements ActionListener{
 						possibilities[i] = new Object();
 						possibilities[i] = arrayLivro.get( i ).getTitulo();
 					}
-				    String s = (String) JOptionPane.showInputDialog(null, "Escolha o livro:\n", "A pesquisa "
+				    String s = (String) JOptionPane.showInputDialog(janelaLivro, "Escolha o livro:\n", "A pesquisa "
 				    		+ "retornou mais de 1 resultado",JOptionPane.INFORMATION_MESSAGE, 
 				    		null, possibilities, possibilities[0]);
 					if (s != null && s.length() > 0) {
@@ -139,6 +141,7 @@ public class LivroController implements ActionListener{
 					oldLivro = new Livro();
 					oldLivro = arrayLivro.get( 0 );
 				}
+				//Se o livro for diferente de vazio
 				if(oldLivro != null){
 					txtIsbn.setText( oldLivro.getIsbn() );
 					txtTitulo.setText( oldLivro.getTitulo() );
@@ -165,13 +168,13 @@ public class LivroController implements ActionListener{
 					txtPrecoVenda.setText( Float.toString( oldLivro.getPrecoVenda() ) );
 					lblNomeArquivo.setText( oldLivro.getIndice() );
 				} else{
-					JOptionPane.showMessageDialog(null, "A pesquisa n„o encontrou nenhum resultado!");
+					JOptionPane.showMessageDialog(janelaLivro, "A pesquisa n„o encontrou nenhum resultado!");
 				}
 			} else {
-				JOptionPane.showMessageDialog(null, "Digite algum titulo para pesquisar");
+				JOptionPane.showMessageDialog(janelaLivro, "Digite algum titulo para pesquisar");
 			}
 		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(null, "Houve um problema com a alteracao do livro. \n"
+			JOptionPane.showMessageDialog(janelaLivro, "Houve um problema com a alteracao do livro. \n"
 					+ "Contate o administrador do sistema! \n Descricao Tecnica: " + e.getMessage());
 		}
 	}
@@ -192,8 +195,9 @@ public class LivroController implements ActionListener{
 			newLivro.setPrecoVenda( Float.parseFloat( txtPrecoVenda.getText() ) );
 			newLivro.setIndice( lblNomeArquivo.getText() );
 			daoLivro.atualizarLivro(oldLivro, newLivro);
+			JOptionPane.showMessageDialog(janelaLivro, "Livro alterado com sucesso!");
+			limparCampos();
 		}
-		
 	}
 	public boolean validaCampos(){
 		boolean isValido = false;
@@ -239,7 +243,7 @@ public class LivroController implements ActionListener{
 			mensagem.append("Indice, ");
 		}
 		if( mensagem.length() > 0){
-			JOptionPane.showMessageDialog(null, "Preencha os campos: " + mensagem.toString());
+			JOptionPane.showMessageDialog(janelaLivro, "Preencha os campos: " + mensagem.toString());
 			return false;
 		}
 		return true;
@@ -277,14 +281,15 @@ public class LivroController implements ActionListener{
 			oldLivro.setPrecoVenda( Float.parseFloat( txtPrecoVenda.getText() ) );
 			oldLivro.setIndice( lblNomeArquivo.getText() );
 			daoLivro.excluirLivro(oldLivro);
-			JOptionPane.showMessageDialog(null, "Livro: " + oldLivro.getTitulo() + " excluido com sucesso!");
+			JOptionPane.showMessageDialog(janelaLivro, "Livro: " + oldLivro.getTitulo() + " excluido com sucesso!");
+			limparCampos();
 		}
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource(); //verifica qual botaoo esta solicitando a acao
 		if( source == btnGravar ){
-			//Se o pesquisar foi pressionado, entao o metodo alterarLivro precisa ser chamado
+			//Se o pesquisar foi pressionado, ent√£o o metodo alterarLivro precisa ser chamado
 			if( pesquisarPressionado ){
 				alterarLivro(oldLivro);
 				pesquisarPressionado = false;
@@ -292,14 +297,13 @@ public class LivroController implements ActionListener{
 				btnExcluir.setEnabled( false );
 				gravarLivro();
 			}
-			limparCampos();
 			return;
 		}
 		//Se o botao pesquisar foi pressionado, o botao gravar muda sua funcao
 		if( source == btnPesquisar ){
 			pesquisarPressionado = true;
 			pesquisarLivro();
-			btnExcluir.setEnabled( true ); //se o botao pesquisar foi pressionado o excluir tambem fica habilitado
+			btnExcluir.setEnabled( true ); //se o botao pesquisar foi pressionado o excluir tambem fica
 		}
 		if( source == btnAnexar ){
 			anexarPdf();
@@ -307,7 +311,6 @@ public class LivroController implements ActionListener{
 		if( source == btnExcluir ){
 			excluirLivro();
 			btnExcluir.setEnabled( false );
-			limparCampos();
 		}
 	}
 }
